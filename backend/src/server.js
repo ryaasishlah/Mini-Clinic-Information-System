@@ -12,6 +12,7 @@ const queueRoutes = require('./routes/queue.routes');
 const medicalRecordRoutes = require('./routes/medicalRecord.routes');
 const prescriptionRoutes = require('./routes/prescription.routes');
 const dashboardRoutes = require('./routes/dashboard.routes');
+const masterRoutes = require('./routes/master.routes');
 
 const app = express();
 

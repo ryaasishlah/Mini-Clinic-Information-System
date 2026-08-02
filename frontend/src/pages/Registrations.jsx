@@ -6,12 +6,14 @@ import toast from 'react-hot-toast';
 const Registrations = () => {
   const [registrations, setRegistrations] = useState([]);
   const [patients, setPatients] = useState([]);
+  const [polyclinics, setPolyclinics] = useState([]);
+  const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    patientId: '', doctorId: '2', polyclinicId: '1', paymentType: 'Umum', initialComplaint: ''
+    patientId: '', doctorId: '', polyclinicId: '', paymentType: 'Umum', initialComplaint: ''
   });
 
   const fetchRegistrations = async () => {
@@ -29,14 +31,20 @@ const Registrations = () => {
     }
   };
 
-  const fetchPatientsForDropdown = async () => {
+  const fetchMasterData = async () => {
     try {
-      const res = await api.get('/patients?limit=100'); // get all or a lot
-      if (res.data.success) {
-        setPatients(res.data.data.patients);
-      }
+      const [resPatients, resPolyclinics, resDoctors] = await Promise.all([
+        api.get('/patients?limit=100'),
+        api.get('/master/polyclinics'),
+        api.get('/master/doctors')
+      ]);
+      
+      if (resPatients.data.success) setPatients(resPatients.data.data.patients);
+      if (resPolyclinics.data.success) setPolyclinics(resPolyclinics.data.data);
+      if (resDoctors.data.success) setDoctors(resDoctors.data.data);
     } catch (error) {
       console.error(error);
+      toast.error('Gagal mengambil master data');
     }
   };
 
@@ -45,9 +53,9 @@ const Registrations = () => {
   }, []);
 
   const openModal = () => {
-    fetchPatientsForDropdown();
+    fetchMasterData();
     setIsModalOpen(true);
-    setFormData({ patientId: '', doctorId: '2', polyclinicId: '1', paymentType: 'Umum', initialComplaint: '' });
+    setFormData({ patientId: '', doctorId: '', polyclinicId: '', paymentType: 'Umum', initialComplaint: '' });
   };
 
   const handleSubmit = async (e) => {
@@ -161,15 +169,19 @@ const Registrations = () => {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Poli *</label>
                   <select required value={formData.polyclinicId} onChange={(e) => setFormData({...formData, polyclinicId: e.target.value})} className="w-full p-2.5 border border-slate-200 rounded-lg text-sm">
-                    <option value="1">Poli Umum</option>
-                    <option value="2">Poli Gigi</option>
-                    <option value="3">Poli Anak</option>
+                    <option value="">-- Pilih Poli --</option>
+                    {polyclinics.map(p => (
+                      <option key={p.id} value={p.id}>{p.name}</option>
+                    ))}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1">Dokter *</label>
                   <select required value={formData.doctorId} onChange={(e) => setFormData({...formData, doctorId: e.target.value})} className="w-full p-2.5 border border-slate-200 rounded-lg text-sm">
-                    <option value="2">Dr. Budi Santoso</option>
+                    <option value="">-- Pilih Dokter --</option>
+                    {doctors.map(d => (
+                      <option key={d.id} value={d.id}>{d.name}</option>
+                    ))}
                   </select>
                 </div>
               </div>
