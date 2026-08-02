@@ -3,9 +3,11 @@ const { successResponse, errorResponse } = require('../utils/response');
 const prisma = new PrismaClient();
 
 const generateQueueNumber = async (polyclinicId) => {
-  // A simple logic: Polyclinic 1 -> A, 2 -> B, 3 -> C
-  const prefixes = ['A', 'B', 'C', 'D', 'E'];
-  const prefix = prefixes[(polyclinicId - 1) % prefixes.length] || 'Q';
+  // Find polyclinic prefix
+  const polyclinic = await prisma.polyclinic.findUnique({
+    where: { id: parseInt(polyclinicId) }
+  });
+  const prefix = polyclinic?.prefix || 'Q';
   
   // Find last queue for this polyclinic today
   const today = new Date();
@@ -166,5 +168,6 @@ module.exports = {
   getQueues,
   createQueue,
   callQueue,
-  updateQueueStatus
+  updateQueueStatus,
+  generateQueueNumber
 };

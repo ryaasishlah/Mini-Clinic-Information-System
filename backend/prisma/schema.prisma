@@ -58,6 +58,7 @@ model Patient {
 model Polyclinic {
   id        Int      @id @default(autoincrement())
   name      String
+  prefix    String   @default("Q")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

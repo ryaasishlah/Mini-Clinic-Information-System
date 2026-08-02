@@ -15,6 +15,7 @@ const Patients = () => {
   const [formData, setFormData] = useState({
     nik: '', name: '', gender: 'Laki-laki', birthDate: '', phone: '', address: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchPatients = async (page = 1, searchQuery = search) => {
     try {
@@ -71,6 +72,7 @@ const Patients = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       if (currentPatient) {
         await api.put(`/patients/${currentPatient.id}`, formData);
@@ -83,6 +85,8 @@ const Patients = () => {
       fetchPatients(pagination.page, search);
     } catch (error) {
       toast.error(error.response?.data?.message || 'Gagal menyimpan data pasien');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -194,24 +198,6 @@ const Patients = () => {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="p-4 border-t border-slate-100 flex items-center justify-between text-sm text-slate-500">
-        <div>
-          Menampilkan {(pagination.page - 1) * pagination.limit + (patients.length > 0 ? 1 : 0)} hingga {Math.min(pagination.page * pagination.limit, pagination.total)} dari {pagination.total} data
-        </div>
-        <div className="flex gap-1">
-          <button 
-            disabled={pagination.page <= 1}
-            onClick={() => handlePageChange(pagination.page - 1)}
-            className="px-3 py-1 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Prev
-          </button>
-          <span className="px-3 py-1 bg-teal-50 text-teal-700 font-medium rounded-md border border-teal-100">
-            {pagination.page}
-          </span>
-          <button 
-            disabled={pagination.page >= pagination.totalPages}
       {/* Pagination UI */}
       {pagination.totalPages > 1 && (
         <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-white">
@@ -302,8 +288,12 @@ const Patients = () => {
                 <button type="button" onClick={closeModal} className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50">
                   Batal
                 </button>
-                <button type="submit" className="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700">
-                  Simpan Data
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Menyimpan...' : 'Simpan Data'}
                 </button>
               </div>
             </form>

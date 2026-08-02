@@ -16,6 +16,8 @@ const Registrations = () => {
     patientId: '', doctorId: '', polyclinicId: '', paymentType: 'Umum', initialComplaint: ''
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const fetchRegistrations = async () => {
     try {
       setLoading(true);
@@ -60,6 +62,7 @@ const Registrations = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     try {
       await api.post('/registrations', formData);
       setIsModalOpen(false);
@@ -67,6 +70,8 @@ const Registrations = () => {
       fetchRegistrations();
     } catch (error) {
       toast.error(error.response?.data?.message || 'Gagal mendaftar');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -213,9 +218,17 @@ const Registrations = () => {
                 <label className="block text-sm font-medium text-slate-700 mb-1">Keluhan Awal</label>
                 <textarea rows="2" value={formData.initialComplaint} onChange={(e) => setFormData({...formData, initialComplaint: e.target.value})} className="w-full p-2.5 border border-slate-200 rounded-lg text-sm"></textarea>
               </div>
-              <div className="pt-4 flex justify-end gap-3 border-t border-slate-100">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm text-slate-700 border border-slate-300 rounded-lg hover:bg-slate-50">Batal</button>
-                <button type="submit" className="px-4 py-2 text-sm text-white bg-teal-600 rounded-lg hover:bg-teal-700">Daftar</button>
+              <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
+                <button type="button" onClick={() => setIsModalOpen(false)} className="px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50">
+                  Batal
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="px-4 py-2 text-sm font-medium text-white bg-teal-600 rounded-lg hover:bg-teal-700 disabled:opacity-50"
+                >
+                  {isSubmitting ? 'Mendaftar...' : 'Daftar'}
+                </button>
               </div>
             </form>
           </div>

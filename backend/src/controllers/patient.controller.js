@@ -95,6 +95,10 @@ const createPatient = async (req, res) => {
       return errorResponse(res, 400, 'Validation Error', { detail: 'NIK, name, gender, and birthDate are required' });
     }
 
+    if (nik.length !== 16 || !/^\d+$/.test(nik)) {
+      return errorResponse(res, 400, 'Validation Error', { detail: 'NIK harus terdiri dari 16 digit angka' });
+    }
+
     // Check unique NIK
     const existingPatient = await prisma.patient.findUnique({ where: { nik } });
     if (existingPatient) {
@@ -134,6 +138,9 @@ const updatePatient = async (req, res) => {
 
     // Check unique NIK if NIK is being changed
     if (nik && nik !== existingPatient.nik) {
+      if (nik.length !== 16 || !/^\d+$/.test(nik)) {
+        return errorResponse(res, 400, 'Validation Error', { detail: 'NIK harus terdiri dari 16 digit angka' });
+      }
       const nikExists = await prisma.patient.findUnique({ where: { nik } });
       if (nikExists) {
         return errorResponse(res, 400, 'Validation Error', { nik: 'NIK already exists' });

@@ -43,10 +43,14 @@ async function main() {
   });
 
   // Polyclinics
-  const polis = ['Poli Umum', 'Poli Gigi', 'Poli Anak'];
+  const polis = [
+    { name: 'Poli Umum', prefix: 'A' },
+    { name: 'Poli Gigi', prefix: 'B' },
+    { name: 'Poli Anak', prefix: 'C' }
+  ];
   for (const poli of polis) {
     await prisma.polyclinic.create({
-      data: { name: poli }
+      data: poli
     });
   }
 

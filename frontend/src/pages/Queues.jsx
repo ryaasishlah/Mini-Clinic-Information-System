@@ -28,12 +28,20 @@ const Queues = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleCall = async (id, queueNumber) => {
+  const handleCall = async (id, queueNumber, polyclinicName) => {
     try {
       await api.put(`/queues/${id}/call`);
       toast.success(`Nomor antrean ${queueNumber} dipanggil`);
       fetchQueues();
-      // Optional: Play text-to-speech here
+      
+      // Text-to-Speech (Web Speech API)
+      if ('speechSynthesis' in window) {
+        const text = `Nomor antrean, ${queueNumber.split('').join(', ')}, silakan menuju, ${polyclinicName}`;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'id-ID';
+        utterance.rate = 0.85; // slightly slower for clarity
+        window.speechSynthesis.speak(utterance);
+      }
     } catch (error) {
       toast.error('Gagal memanggil antrean');
     }
@@ -90,7 +98,7 @@ const Queues = () => {
 
                 <div className="flex gap-2">
                   <button 
-                    onClick={() => handleCall(queue.id, queue.queueNumber)}
+                    onClick={() => handleCall(queue.id, queue.queueNumber, queue.registration?.polyclinic?.name)}
                     disabled={queue.status === 'COMPLETED'}
                     className="flex-1 flex items-center justify-center py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                   >
