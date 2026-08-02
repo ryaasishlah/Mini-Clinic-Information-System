@@ -94,10 +94,25 @@ const createMedicalRecord = async (req, res) => {
 
 const getMedicalRecordsByPatient = async (req, res) => {
   try {
-    const { patientId } = req.params;
+    const { patientId } = req.params; // Can be ID or RM Number
+
+    let patientCondition = {};
+    if (patientId.startsWith('RM-')) {
+      patientCondition = { medicalRecordNumber: patientId };
+    } else {
+      patientCondition = { id: parseInt(patientId) };
+    }
+
+    const patient = await prisma.patient.findFirst({
+      where: patientCondition
+    });
+
+    if (!patient) {
+      return errorResponse(res, 404, 'Patient not found');
+    }
 
     const medicalRecords = await prisma.medicalRecord.findMany({
-      where: { patientId: parseInt(patientId) },
+      where: { patientId: patient.id },
       include: {
         registration: {
           include: {
