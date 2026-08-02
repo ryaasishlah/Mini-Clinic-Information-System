@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Search, Plus, X } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const MedicalRecords = () => {
   const { user } = useAuth();
@@ -35,7 +36,7 @@ const MedicalRecords = () => {
       }
     } catch (error) {
       console.error(error);
-      alert('Gagal mengambil data rekam medis. Pastikan ID Pasien/No. RM benar.');
+      toast.error('Gagal mengambil data rekam medis. Pastikan ID Pasien/No. RM benar.');
     } finally {
       setLoading(false);
     }
@@ -74,14 +75,14 @@ const MedicalRecords = () => {
     try {
       await api.post('/medical-records', formData);
       setIsModalOpen(false);
-      alert('Pemeriksaan berhasil disimpan!');
+      toast.success('Pemeriksaan berhasil disimpan!');
       // Optionally fetch again if patientId matches
       if (patientId) {
         // trigger fetch hack
         document.getElementById('btn-cari').click();
       }
     } catch (error) {
-      alert(error.response?.data?.message || 'Gagal menyimpan pemeriksaan');
+      toast.error(error.response?.data?.message || 'Gagal menyimpan pemeriksaan');
     }
   };
 

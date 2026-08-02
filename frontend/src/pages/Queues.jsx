@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Volume2, CheckCircle, SkipForward } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Queues = () => {
   const [queues, setQueues] = useState([]);
@@ -27,22 +28,24 @@ const Queues = () => {
     return () => clearInterval(interval);
   }, []);
 
-  const handleCall = async (id) => {
+  const handleCall = async (id, queueNumber) => {
     try {
       await api.put(`/queues/${id}/call`);
+      toast.success(`Nomor antrean ${queueNumber} dipanggil`);
       fetchQueues();
       // Optional: Play text-to-speech here
     } catch (error) {
-      alert('Gagal memanggil antrean');
+      toast.error('Gagal memanggil antrean');
     }
   };
 
   const handleStatus = async (id, status) => {
     try {
       await api.put(`/queues/${id}/status`, { status });
+      toast.success('Status antrean diupdate');
       fetchQueues();
     } catch (error) {
-      alert('Gagal update status');
+      toast.error('Gagal update status');
     }
   };
 
@@ -87,7 +90,7 @@ const Queues = () => {
 
                 <div className="flex gap-2">
                   <button 
-                    onClick={() => handleCall(queue.id)}
+                    onClick={() => handleCall(queue.id, queue.queueNumber)}
                     disabled={queue.status === 'COMPLETED'}
                     className="flex-1 flex items-center justify-center py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                   >

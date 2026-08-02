@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { CalendarCheck, Plus, CheckCircle, Search, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Registrations = () => {
   const [registrations, setRegistrations] = useState([]);
@@ -22,6 +23,7 @@ const Registrations = () => {
       }
     } catch (error) {
       console.error('Failed to fetch registrations', error);
+      toast.error('Gagal mengambil data pendaftaran');
     } finally {
       setLoading(false);
     }
@@ -53,20 +55,20 @@ const Registrations = () => {
     try {
       await api.post('/registrations', formData);
       setIsModalOpen(false);
+      toast.success('Pendaftaran pasien berhasil!');
       fetchRegistrations();
-      // maybe also auto generate queue? wait backend needs a separate call for queue
-      // I will simplify and assume the admin creates the queue in the Queue page.
     } catch (error) {
-      alert(error.response?.data?.message || 'Gagal mendaftar');
+      toast.error(error.response?.data?.message || 'Gagal mendaftar');
     }
   };
 
   const handleUpdateStatus = async (id, status) => {
     try {
       await api.put(`/registrations/${id}`, { status });
+      toast.success('Status berhasil diupdate!');
       fetchRegistrations();
     } catch (error) {
-      alert('Gagal update status');
+      toast.error('Gagal update status');
     }
   };
 

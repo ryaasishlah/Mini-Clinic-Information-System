@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Search, Plus, Edit2, Trash2, X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Patients = () => {
   const [patients, setPatients] = useState([]);
@@ -25,6 +26,7 @@ const Patients = () => {
       }
     } catch (error) {
       console.error('Failed to fetch patients', error);
+      toast.error('Gagal mengambil data pasien');
     } finally {
       setLoading(false);
     }
@@ -72,13 +74,15 @@ const Patients = () => {
     try {
       if (currentPatient) {
         await api.put(`/patients/${currentPatient.id}`, formData);
+        toast.success('Data pasien berhasil diubah!');
       } else {
         await api.post('/patients', formData);
+        toast.success('Pasien baru berhasil ditambahkan!');
       }
       closeModal();
       fetchPatients(pagination.page, search);
     } catch (error) {
-      alert(error.response?.data?.message || 'Failed to save patient');
+      toast.error(error.response?.data?.message || 'Gagal menyimpan data pasien');
     }
   };
 
@@ -86,9 +90,10 @@ const Patients = () => {
     if (window.confirm('Are you sure you want to delete this patient?')) {
       try {
         await api.delete(`/patients/${id}`);
+        toast.success('Pasien berhasil dihapus!');
         fetchPatients(pagination.page, search);
       } catch (error) {
-        alert(error.response?.data?.message || 'Failed to delete patient');
+        toast.error(error.response?.data?.message || 'Gagal menghapus pasien');
       }
     }
   };
