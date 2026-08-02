@@ -68,7 +68,19 @@ const createRegistration = async (req, res) => {
       }
     });
 
-    return successResponse(res, 201, 'Registration created successfully', registration);
+    // Auto-generate queue number
+    const { generateQueueNumber } = require('./queue.controller');
+    const queueNumber = await generateQueueNumber(parseInt(polyclinicId));
+
+    const queue = await prisma.queue.create({
+      data: {
+        registrationId: registration.id,
+        queueNumber,
+        status: 'WAITING'
+      }
+    });
+
+    return successResponse(res, 201, 'Registration created successfully with Queue', { registration, queue });
   } catch (error) {
     console.error(error);
     return errorResponse(res, 500, 'Internal Server Error');
