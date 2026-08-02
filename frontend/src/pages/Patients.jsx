@@ -15,6 +15,7 @@ const Patients = () => {
   const [formData, setFormData] = useState({
     nik: '', name: '', gender: 'Laki-laki', birthDate: '', phone: '', address: ''
   });
+  const [formErrors, setFormErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchPatients = async (page = 1, searchQuery = search) => {
@@ -48,6 +49,7 @@ const Patients = () => {
   };
 
   const openModal = (patient = null) => {
+    setFormErrors({});
     if (patient) {
       setCurrentPatient(patient);
       setFormData({
@@ -68,11 +70,13 @@ const Patients = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setCurrentPatient(null);
+    setFormErrors({});
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setFormErrors({});
     try {
       if (currentPatient) {
         await api.put(`/patients/${currentPatient.id}`, formData);
@@ -84,7 +88,21 @@ const Patients = () => {
       closeModal();
       fetchPatients(pagination.page, search);
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Gagal menyimpan data pasien');
+      const errData = error.response?.data;
+      if (errData?.errors) {
+        const newErrors = {};
+        if (errData.errors.nik) newErrors.nik = errData.errors.nik;
+        if (errData.errors.detail) {
+          if (errData.errors.detail.toLowerCase().includes('nik')) {
+            newErrors.nik = errData.errors.detail;
+          } else {
+            newErrors.general = errData.errors.detail;
+          }
+        }
+        setFormErrors(newErrors);
+      } else {
+        toast.error(errData?.message || 'Gagal menyimpan data pasien');
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -236,12 +254,18 @@ const Patients = () => {
               </button>
             </div>
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {formErrors.general && (
+                <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg">
+                  {formErrors.general}
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">NIK *</label>
                 <input 
                   type="text" required value={formData.nik} onChange={(e) => setFormData({...formData, nik: e.target.value})}
-                  className="w-full p-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500" 
+                  className={`w-full p-2.5 border rounded-lg text-sm focus:ring-2 focus:ring-teal-500 focus:border-teal-500 ${formErrors.nik ? 'border-red-500 bg-red-50' : 'border-slate-200'}`} 
                 />
+                {formErrors.nik && <p className="mt-1 text-xs text-red-500">{formErrors.nik}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-1">Nama Pasien *</label>

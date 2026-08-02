@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Stethoscope, Lock, User, AlertCircle } from 'lucide-react';
+import { Stethoscope, Lock, User, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
@@ -38,12 +39,13 @@ const Login = () => {
                 <Stethoscope size={32} className="text-teal-400" />
               </div>
               <h1 className="text-2xl font-bold text-white tracking-wide">Mini Clinic</h1>
-              <p className="text-teal-200 mt-2 text-sm">Information System</p>
+              <p className="text-teal-200 mt-2 text-sm">Sistem Informasi Manajemen Klinik</p>
             </div>
           </div>
           
           <div className="p-8">
-            <h2 className="text-xl font-semibold text-slate-800 mb-6 text-center">Welcome Back</h2>
+            <h2 className="text-xl font-semibold text-slate-800 mb-2 text-center">Selamat Datang Kembali</h2>
+            <p className="text-sm text-slate-500 mb-6 text-center">Silakan login untuk mengakses dasbor klinik Anda.</p>
             
             {error && (
               <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-r-lg flex items-start">
@@ -67,7 +69,7 @@ const Login = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow bg-slate-50 focus:bg-white"
-                    placeholder="Enter your username"
+                    placeholder="Masukkan username Anda"
                     required
                   />
                 </div>
@@ -83,13 +85,20 @@ const Login = () => {
                   </div>
                   <input
                     id="password"
-                    type="password"
+                    type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2.5 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow bg-slate-50 focus:bg-white"
+                    className="block w-full pl-10 pr-10 py-2.5 border border-slate-200 rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-shadow bg-slate-50 focus:bg-white"
                     placeholder="••••••••"
                     required
                   />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
               </div>
 

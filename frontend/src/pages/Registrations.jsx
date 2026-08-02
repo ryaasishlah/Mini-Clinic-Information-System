@@ -12,6 +12,7 @@ const Registrations = () => {
   
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [formData, setFormData] = useState({
     patientId: '', doctorId: '', polyclinicId: '', paymentType: 'Umum', initialComplaint: ''
   });
@@ -160,7 +161,12 @@ const Registrations = () => {
                     {reg.status === 'WAITING' && (
                       <button onClick={() => handleUpdateStatus(reg.id, 'CHECK_IN')} className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-md transition-colors mr-2">Check In</button>
                     )}
-                    <button className="text-xs bg-slate-50 text-slate-600 hover:bg-slate-100 px-3 py-1.5 rounded-md transition-colors">Detail</button>
+                    <button 
+                      onClick={() => setSelectedRegistration(reg)}
+                      className="text-xs bg-slate-50 text-slate-600 hover:bg-slate-100 px-3 py-1.5 rounded-md transition-colors"
+                    >
+                      Detail
+                    </button>
                   </td>
                 </tr>
               ))
@@ -231,6 +237,70 @@ const Registrations = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Detail Modal */}
+      {selectedRegistration && (
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-xl w-full max-w-lg p-6 animate-fade-in-up">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-4 mb-4">
+              <h3 className="text-lg font-semibold text-slate-800">Detail Pendaftaran</h3>
+              <button onClick={() => setSelectedRegistration(null)} className="text-slate-400 hover:text-slate-600"><X size={20} /></button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Nama Pasien</p>
+                  <p className="font-medium text-slate-800">{selectedRegistration.patient?.name}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">No. RM</p>
+                  <p className="font-medium text-slate-800">{selectedRegistration.patient?.medicalRecordNumber}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Poliklinik</p>
+                  <p className="font-medium text-slate-800">{selectedRegistration.polyclinic?.name}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Dokter</p>
+                  <p className="font-medium text-slate-800">{selectedRegistration.doctor?.name}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Tanggal Kunjungan</p>
+                  <p className="font-medium text-slate-800">{new Date(selectedRegistration.visitDate).toLocaleDateString('id-ID')}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500 mb-1">Status</p>
+                  <span className={`px-2 py-1 text-xs rounded-full font-medium inline-block mt-0.5 ${
+                    selectedRegistration.status === 'WAITING' ? 'bg-orange-100 text-orange-700' :
+                    selectedRegistration.status === 'CHECK_IN' ? 'bg-blue-100 text-blue-700' :
+                    selectedRegistration.status === 'IN_PROGRESS' ? 'bg-purple-100 text-purple-700' :
+                    'bg-green-100 text-green-700'
+                  }`}>
+                    {selectedRegistration.status}
+                  </span>
+                </div>
+              </div>
+              
+              <div>
+                <p className="text-xs text-slate-500 mb-1">Keluhan Awal</p>
+                <div className="bg-slate-50 p-3 rounded-lg border border-slate-100 text-sm text-slate-700 min-h-[60px]">
+                  {selectedRegistration.initialComplaint || '-'}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-100 text-right">
+              <button 
+                onClick={() => setSelectedRegistration(null)}
+                className="px-4 py-2 text-sm font-medium text-white bg-slate-800 rounded-lg hover:bg-slate-700 transition-colors"
+              >
+                Tutup
+              </button>
+            </div>
           </div>
         </div>
       )}

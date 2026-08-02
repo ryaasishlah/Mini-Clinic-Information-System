@@ -34,6 +34,7 @@ app.use('/api/queues', queueRoutes);
 app.use('/api/medical-records', medicalRecordRoutes);
 app.use('/api/prescriptions', prescriptionRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/master', masterRoutes);
 
 // 404 Route Not Found
 app.use((req, res, next) => {
