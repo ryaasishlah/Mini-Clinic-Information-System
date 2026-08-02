@@ -4,9 +4,9 @@ import MainLayout from './layouts/MainLayout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Patients from './pages/Patients';
-// import Registrations from './pages/Registrations';
-// import Queues from './pages/Queues';
-// import MedicalRecords from './pages/MedicalRecords';
+import Registrations from './pages/Registrations';
+import Queues from './pages/Queues';
+import MedicalRecords from './pages/MedicalRecords';
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useAuth();
@@ -24,11 +24,9 @@ function AppRoutes() {
       <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
         <Route index element={<Dashboard />} />
         <Route path="patients" element={<Patients />} />
-        {/*
         <Route path="registrations" element={<Registrations />} />
         <Route path="queues" element={<Queues />} />
         <Route path="medical-records" element={<MedicalRecords />} />
-        */}
       </Route>
     </Routes>
   );
