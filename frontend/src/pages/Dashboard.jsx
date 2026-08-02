@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import api from '../services/api';
 import { Users, UserPlus, ClipboardList, Clock, CheckCircle } from 'lucide-react';
 
@@ -89,13 +90,22 @@ const Dashboard = () => {
         />
       </div>
 
-      {/* Placeholder for future charts or recent activities */}
+      {/* Quick Actions (CTAs) */}
       <div className="mt-8 bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-        <h3 className="text-lg font-semibold text-slate-800 mb-4">Informasi Sistem</h3>
-        <div className="bg-slate-50 p-4 rounded-lg border border-slate-100">
-          <p className="text-slate-600">
-            Selamat datang di Mini Clinic Information System. Gunakan menu di sidebar untuk menavigasi ke fitur-fitur seperti manajemen pasien, pendaftaran, dan rekam medis.
-          </p>
+        <h3 className="text-lg font-semibold text-slate-800 mb-4">Aksi Cepat</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link to="/patients" className="flex items-center justify-center gap-2 bg-blue-50 text-blue-700 hover:bg-blue-100 p-4 rounded-xl font-medium transition-colors border border-blue-100">
+            <UserPlus size={20} />
+            Tambah Pasien Baru
+          </Link>
+          <Link to="/registrations" className="flex items-center justify-center gap-2 bg-teal-50 text-teal-700 hover:bg-teal-100 p-4 rounded-xl font-medium transition-colors border border-teal-100">
+            <ClipboardList size={20} />
+            Daftarkan Kunjungan
+          </Link>
+          <Link to="/queues" className="flex items-center justify-center gap-2 bg-orange-50 text-orange-700 hover:bg-orange-100 p-4 rounded-xl font-medium transition-colors border border-orange-100">
+            <Clock size={20} />
+            Lihat Antrean Poli
+          </Link>
         </div>
       </div>
     </div>

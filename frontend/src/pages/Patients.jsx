@@ -144,12 +144,24 @@ const Patients = () => {
           </thead>
           <tbody className="divide-y divide-slate-100 text-sm">
             {loading ? (
-              <tr>
-                <td colSpan="6" className="p-8 text-center text-slate-500">Memuat data...</td>
-              </tr>
+              <tr><td colSpan="6" className="p-8 text-center text-slate-500">Memuat data...</td></tr>
             ) : patients.length === 0 ? (
               <tr>
-                <td colSpan="6" className="p-8 text-center text-slate-500">Data pasien tidak ditemukan.</td>
+                <td colSpan="6" className="p-12 text-center">
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="bg-slate-50 p-4 rounded-full mb-4">
+                      <Search size={32} className="text-slate-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-slate-800 mb-1">Belum ada pasien</h3>
+                    <p className="text-sm text-slate-500 mb-4 max-w-sm">Data pasien kosong atau tidak ditemukan. Silakan tambahkan pasien baru untuk memulai.</p>
+                    <button 
+                      onClick={() => openModal()}
+                      className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Plus size={16} className="mr-2" /> Tambah Pasien Baru
+                    </button>
+                  </div>
+                </td>
               </tr>
             ) : (
               patients.map((patient) => (
@@ -200,13 +212,30 @@ const Patients = () => {
           </span>
           <button 
             disabled={pagination.page >= pagination.totalPages}
-            onClick={() => handlePageChange(pagination.page + 1)}
-            className="px-3 py-1 border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Next
-          </button>
+      {/* Pagination UI */}
+      {pagination.totalPages > 1 && (
+        <div className="p-4 border-t border-slate-100 flex items-center justify-between bg-white">
+          <p className="text-sm text-slate-500">
+            Menampilkan halaman {pagination.page} dari {pagination.totalPages}
+          </p>
+          <div className="flex gap-2">
+            <button 
+              disabled={pagination.page === 1}
+              onClick={() => handlePageChange(pagination.page - 1)}
+              className="px-3 py-1 text-sm border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50"
+            >
+              Sebelumnya
+            </button>
+            <button 
+              disabled={pagination.page === pagination.totalPages}
+              onClick={() => handlePageChange(pagination.page + 1)}
+              className="px-3 py-1 text-sm border border-slate-200 rounded-md hover:bg-slate-50 disabled:opacity-50"
+            >
+              Selanjutnya
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Modal */}
       {isModalOpen && (

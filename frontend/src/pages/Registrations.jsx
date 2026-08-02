@@ -111,7 +111,23 @@ const Registrations = () => {
             {loading ? (
               <tr><td colSpan="6" className="p-8 text-center text-slate-500">Memuat data...</td></tr>
             ) : registrations.length === 0 ? (
-              <tr><td colSpan="6" className="p-8 text-center text-slate-500">Belum ada pendaftaran hari ini.</td></tr>
+              <tr>
+                <td colSpan="6" className="p-12 text-center">
+                  <div className="flex flex-col items-center justify-center">
+                    <div className="bg-slate-50 p-4 rounded-full mb-4">
+                      <CalendarCheck size={32} className="text-slate-400" />
+                    </div>
+                    <h3 className="text-lg font-medium text-slate-800 mb-1">Belum ada kunjungan</h3>
+                    <p className="text-sm text-slate-500 mb-4 max-w-sm">Hari ini belum ada pasien yang mendaftar. Silakan daftarkan pasien untuk melihat daftar antrean.</p>
+                    <button 
+                      onClick={openModal}
+                      className="flex items-center bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                    >
+                      <Plus size={16} className="mr-2" /> Daftar Pasien
+                    </button>
+                  </div>
+                </td>
+              </tr>
             ) : (
               registrations.map((reg) => (
                 <tr key={reg.id} className="hover:bg-slate-50/50 transition-colors">
