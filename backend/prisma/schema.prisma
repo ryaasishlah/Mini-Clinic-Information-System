@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  RECEPTIONIST
+}
+
+enum RegistrationStatus {
+  WAITING
+  CHECK_IN
+  IN_PROGRESS
+  COMPLETED
+}
+
+enum QueueStatus {
+  WAITING
+  CALLED
+  COMPLETED
+  SKIPPED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  name      String
+  role      Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  registrationsAsDoctor Registration[] @relation("DoctorRegistrations")
+}
+
+model Patient {
+  id                  Int      @id @default(autoincrement())
+  medicalRecordNumber String   @unique // format: RM-YYYYMMDD-XXXX
+  nik                 String   @unique
+  name                String
+  gender              String
+  birthDate           DateTime
+  phone               String?
+  address             String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  registrations Registration[]
+  medicalRecords MedicalRecord[]
+}
+
+model Polyclinic {
+  id        Int      @id @default(autoincrement())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  registrations Registration[]
+}
+
+model Registration {
+  id               Int                @id @default(autoincrement())
+  patientId        Int
+  doctorId         Int
+  polyclinicId     Int
+  visitDate        DateTime
+  paymentType      String
+  initialComplaint String             @db.Text
+  status           RegistrationStatus @default(WAITING)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  patient    Patient    @relation(fields: [patientId], references: [id])
+  doctor     User       @relation("DoctorRegistrations", fields: [doctorId], references: [id])
+  polyclinic Polyclinic @relation(fields: [polyclinicId], references: [id])
+  
+  queue         Queue?
+  medicalRecord MedicalRecord?
+}
+
+model Queue {
+  id             Int         @id @default(autoincrement())
+  registrationId Int         @unique
+  queueNumber    String      // format: A001, B001 etc
+  status         QueueStatus @default(WAITING)
+  calledAt       DateTime?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  registration Registration @relation(fields: [registrationId], references: [id])
+}
+
+model MedicalRecord {
+  id                    Int      @id @default(autoincrement())
+  registrationId        Int      @unique
+  patientId             Int
+  subjective            String   @db.Text
+  objectiveBloodPressure String?
+  objectiveTemperature   Float?
+  objectiveWeight        Float?
+  objectiveHeight        Float?
+  assessmentDiagnosis    String   @db.Text
+  planTherapy           String   @db.Text
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  registration Registration @relation(fields: [registrationId], references: [id])
+  patient      Patient      @relation(fields: [patientId], references: [id])
+  
+  actions       MedicalAction[]
+  prescriptions Prescription[]
+}
+
+model MedicalAction {
+  id              Int      @id @default(autoincrement())
+  medicalRecordId Int
+  actionName      String
+  description     String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+}
+
+model Prescription {
+  id              Int      @id @default(autoincrement())
+  medicalRecordId Int
+  medicineName    String
+  dosage          String
+  quantity        Int
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now())
+
+  medicalRecord MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+}
